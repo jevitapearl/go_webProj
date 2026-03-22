@@ -1,44 +1,48 @@
 package models
 
 import (
-	"github.com/jevitapearl/go_webProj/goBookInventory/pkg/config"
+	"bookstore/pkg/config"
+
 	"github.com/jinzhu/gorm"
 )
 
 var db *gorm.DB
 
+// Perform DB operations as if you are interacting with an object
 type Book struct {
 	gorm.Model
-	Name        string `gorm:""json:"name"`
-	Author      string `json: "author"`
+	Name        string `json:"name"`
+	Author      string `json:"author"`
 	Publication string `json:"publication"`
 }
 
+// runs sutomatically when this package is imported
 func init() {
-	config.Connect() // from config module
-	db = config.GetDB() // initialized DB instance and stores it in var db
-	db.AutoMigrate(&Book{}) // Ensures schema matches struct
+	config.Connect()        // connects the db
+	db = config.GetDB()     // retrieves db instance
+	db.AutoMigrate(&Book{}) // auto-migrates the schema for Book
 }
 
-func (b *Book) CreateBook() *Book{ // Insert
-	db.NewRecord(b)
-	db.Create(&b)
-	return b
+func (b *Book) CreateBook() *Book {
+	if b.ID == 0 { // checks if the entry exists
+		db.Create(&b)
+	}
+	return b //final state of the data after operation
 }
 
-func GetAllBooks() []Book{ //
+func GetAllBooks() []Book {
 	var Books []Book
-	db.Find(&Books)
+	db.Find(&Books) // passes a pointer because passing the var will result in sending a copy of the slice and no changes are reflected
 	return Books
 }
 
-func GetBookById(Id int64) (*Book, *gorm.DB){
+func GetBookById(Id int64) (*Book, *gorm.DB) {
 	var getBook Book
-	db := db.Where("ID=?", Id).Find(&getBook)
-	return &getBook, db
+	result := db.Where("ID=?", Id).Find(&getBook) // '?' is a placeholder. It prevents SQL injections by safely filtering the inputs from the user
+	return &getBook, result
 }
 
-func DeleteBook(Id int64) Book{
+func DeleteBook(Id int64) Book {
 	var book Book
 	db.Where("ID=?", Id).Delete(book)
 	return book

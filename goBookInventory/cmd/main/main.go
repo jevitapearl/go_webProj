@@ -4,15 +4,17 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jevitapearl/go_webProj/goBookInventory/pkg/config"
+	"bookstore/pkg/routes"
+
 	"github.com/gorilla/mux"
-	"github.com/jevitapearl/go_webProj/goBookInventory/pkg/routes"
-	"github.com/jinzhu/gorm/dialect/mysql"
+
+	// "github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func main(){
+func main() {
 	r := mux.NewRouter()
 	routes.RegisterBookStoreRoutes(r)
 	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe(":8080",r))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
