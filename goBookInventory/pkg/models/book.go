@@ -16,7 +16,7 @@ type Book struct {
 	Publication string `json:"publication"`
 }
 
-// runs sutomatically when this package is imported
+// runs automatically when this package is imported
 func init() {
 	config.Connect()        // connects the db
 	db = config.GetDB()     // retrieves db instance
